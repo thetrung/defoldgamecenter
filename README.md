@@ -5,10 +5,10 @@ Defold Game Center native extension. Only support basic funtionalities for now.
 You can use Defold-LFS in your own project by adding this project as a [Defold library dependency](http://www.defold.com/manuals/libraries/). Open your game.project file and in the dependencies field under project add:
 
 ```
-	https://github.com/vinhvd/defoldgamecenter/archive/master.zip
+	https://github.com/Dragosha/defoldgamecenter/archive/master.zip
 ```
 
-Or point to the ZIP file of a [specific release](https://github.com/vinhvd/defoldgamecenter/releases).
+Or point to the ZIP file of a [specific release](https://github.com/Dragosha/defoldgamecenter/releases).
 
 ## Constants:
 - ###### Leaderboard time scope
@@ -57,6 +57,11 @@ local function login_cb(self, data)
 	if(data.error) then
 		print("===>code :" .. data.error.code)
 		print("===>message :" .. data.error.message)	
+	else
+		if data.playerID then
+			print("Game center initialized with:", data.alias, data.playerID)
+            ...
+		end
 	end
 end
 
@@ -68,11 +73,6 @@ local function report_score_cb(self, data)
 	if(data.error) then
 		print("===>code :" .. data.error.code)
 		print("===>message :" .. data.error.message)
-	else
-		if data.playerID then
-			print("Game center initialized with:", data.alias, data.playerID)
-            ...
-		end
 	end
 end
 
@@ -134,6 +134,11 @@ local function login_cb(self, data)
 	if(data.error) then
 		print("===>code :" .. data.error.code)
 		print("===>message :" .. data.error.message)
+	else
+		if data.playerID then
+			print("Game center initialized with:", data.alias, data.playerID)
+            ...
+		end
 	end
 end
 
@@ -200,16 +205,4 @@ elseif message_id == hash("reset_achievements") then
         gamecenter.resetAchievements(reset_achievements_cb)                
 end
 ```
-## Screenshots:
-- ###### Log in
-![ScreenShot](https://s4.postimg.org/t7gzzsef1/image.png "Log in")
-- ###### Log in progress
-![ScreenShot](https://s4.postimg.org/xun21k1rx/image.png "Log in progress")
-- ###### Logged in
-![ScreenShot](https://s4.postimg.org/xx6xoe5fh/image.png "Logged in")
-- ###### Show a leaderboard
-![ScreenShot](https://s4.postimg.org/oo4re9wjh/image.png "Show a leaderboards")
-- ###### Show leaderboards
-![ScreenShot](https://s4.postimg.org/qihlw0jjx/image.png "Show leaderboards")
-- ###### Show Achievements
-![ScreenShot](https://s4.postimg.org/aya85h9fh/image.png "Show Achievements")
+
