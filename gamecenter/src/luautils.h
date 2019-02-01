@@ -36,6 +36,14 @@ struct GKError
     GKError(int code, const char *description) : m_code(code), m_description(description) {}
 };
 
+/**
+struct GKPlayer
+{
+  const char  *m_playerID;
+  const char  *m_displayName;
+  GKPlayer(const char  *playerID, const char *displayName) : m_playerID(playerID), m_displayName(displayName) {}
+};**/
+
 struct SAchievement
 {
     const char	*m_identifier;
@@ -48,14 +56,16 @@ struct CallbackInfo
 {
     LuaCallbackInfo *m_Cbk;
     GKError         *m_Error;
+    const char      *m_playerID;
+    const char      *m_alias;
     dmArray<SAchievement> m_achievements;
     CallbackInfo(): m_Error(0), m_Cbk(new LuaCallbackInfo()) {}
     void Delete(){
-    	
+
     	if(m_Cbk) {
     		delete m_Cbk;
     	}
-    	
+
     	if(m_Error) {
     		delete m_Error;
     	}

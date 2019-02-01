@@ -68,6 +68,11 @@ local function report_score_cb(self, data)
 	if(data.error) then
 		print("===>code :" .. data.error.code)
 		print("===>message :" .. data.error.message)
+	else
+		if data.playerID then
+			print("Game center initialized with:", data.alias, data.playerID)
+            ...
+		end
 	end
 end
 

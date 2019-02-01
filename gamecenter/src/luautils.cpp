@@ -25,13 +25,13 @@ void registerCallback(lua_State* L, int index, LuaCallbackInfo* cbk)
         dmScript::Unref(cbk->m_L, LUA_REGISTRYINDEX, cbk->m_Callback);
         dmScript::Unref(cbk->m_L, LUA_REGISTRYINDEX, cbk->m_Self);
     }
-    
+
     cbk->m_L = dmScript::GetMainThread(L);
     luaL_checktype(L, index, LUA_TFUNCTION);
-    
+
     lua_pushvalue(L, index);
     cbk->m_Callback = dmScript::Ref(L, LUA_REGISTRYINDEX);
-    
+
     dmScript::GetInstance(L);
     cbk->m_Self = dmScript::Ref(L, LUA_REGISTRYINDEX);
 }
@@ -42,34 +42,43 @@ void invokeErrorCallback(CallbackInfo *cbkInfo)
     {
         return;
     }
-    
+
     lua_State* L = cbkInfo->m_Cbk->m_L;
     DM_LUA_STACK_CHECK(L, 0);
-    
+
     lua_rawgeti(L, LUA_REGISTRYINDEX, cbkInfo->m_Cbk->m_Callback);
-    
+
     // Setup self (the script instance)
     lua_rawgeti(L, LUA_REGISTRYINDEX, cbkInfo->m_Cbk->m_Self);
     lua_pushvalue(L, -1);
     dmScript::SetInstance(L);
-    
+
     lua_newtable(L);
-    
+
     if(cbkInfo->m_Error) {
 	    lua_newtable(L);
 	    lua_pushnumber(L, cbkInfo->m_Error->m_code);
 	    lua_setfield(L, -2, "code");
 	    lua_pushstring(L, cbkInfo->m_Error->m_description);
 	    lua_setfield(L, -2, "message");
-	    
+
 	    lua_setfield(L, -2, "error");
     }
-    
+
     if(cbkInfo->m_Error) {
     	delete cbkInfo->m_Error;
     	cbkInfo->m_Error = 0;
     }
-    
+
+    if(cbkInfo->m_playerID){
+      lua_pushstring(L, cbkInfo->m_playerID);
+	    lua_setfield(L, -2, "playerID");
+    }
+    if(cbkInfo->m_alias){
+      lua_pushstring(L, cbkInfo->m_alias);
+	    lua_setfield(L, -2, "alias");
+    }
+
     int number_of_arguments = 2; // instance + 1
     int ret = lua_pcall(L, number_of_arguments, 0, 0);
     if(ret != 0) {
@@ -84,18 +93,18 @@ void invokeAchievementCallback(CallbackInfo *cbkInfo)
     {
         return;
     }
-    
+
     lua_State* L = cbkInfo->m_Cbk->m_L;
     DM_LUA_STACK_CHECK(L, 0);
     lua_rawgeti(L, LUA_REGISTRYINDEX, cbkInfo->m_Cbk->m_Callback);
-    
+
     // Setup self (the script instance)
     lua_rawgeti(L, LUA_REGISTRYINDEX, cbkInfo->m_Cbk->m_Self);
     lua_pushvalue(L, -1);
     dmScript::SetInstance(L);
-    
+
     lua_newtable(L);
-    
+
     if(cbkInfo->m_achievements.Size() > 0) {
 	    lua_newtable(L);
 	    int count = 0;
@@ -112,7 +121,7 @@ void invokeAchievementCallback(CallbackInfo *cbkInfo)
 	    }
     	lua_setfield(L, -2, "achievements");
     }
-    
+
     int number_of_arguments = 2; // instance + 1
     int ret = lua_pcall(L, number_of_arguments, 0, 0);
     if(ret != 0) {

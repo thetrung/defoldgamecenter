@@ -67,7 +67,9 @@ enum GKErrors
     GK_ERROR_GAME_SESSION_REQUEST_INVALID
 };
 
+
 extern void login(CallbackFn fn , CallbackInfo* cbk);
+extern bool isGameCenterAvailable();
 extern void reportScore(const char *leaderboardId, int score, CallbackFn fn, CallbackInfo* cbk);
 extern void showLeaderboards(int timeScope);
 extern void showLeaderboards(const char *leaderboardId, int timeScope);
@@ -75,3 +77,5 @@ extern void showAchievements();
 extern void submitAchievement(const char *identifier, double percentComplete, CallbackFn fn , CallbackInfo* cbk);
 extern void loadAchievements(CallbackFn fn , CallbackInfo* cbk);
 extern void resetAchievements(CallbackFn fn , CallbackInfo* cbk);
+extern void saveGameString(const char *str, const char *name, CallbackFn fn , CallbackInfo* cbk);
+extern bool testBool();

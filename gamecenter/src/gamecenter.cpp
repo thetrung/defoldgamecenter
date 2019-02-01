@@ -20,7 +20,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
+
 
 #define EXTENSION_NAME GameCenter
 #define LIB_NAME "GameCenter"
@@ -31,7 +31,7 @@
 #include <dmsdk/sdk.h>
 
 #if defined(DM_PLATFORM_IOS) || defined(DM_PLATFORM_OSX)
-
+#include <unistd.h>
 #include "gamecenter_private.h"
 
 CallbackInfo *g_cbkInfo = 0;
@@ -51,6 +51,14 @@ static int login(lua_State* L)
     return 0;
 }
 
+
+static int isAvailable(lua_State* L)
+{
+    bool status=isGameCenterAvailable();
+    lua_pushboolean(L, status);
+    return 1;
+}
+
 /** Submit a score for a specified Leader Board
  */
 static int reportScore(lua_State* L)
@@ -59,7 +67,7 @@ static int reportScore(lua_State* L)
     int n = lua_gettop(L);
     const char *leaderboardId = 0;
     int score = 0;
-    
+
     if(n > 2) {
     	leaderboardId = lua_tostring(L, 1);
     	score = lua_tonumber(L, 2);
@@ -67,10 +75,10 @@ static int reportScore(lua_State* L)
     	leaderboardId = toTableString(L, 1, "leaderboardId");
     	score = checkTableNumber(L, 1, "score", 0);
     }
-    
+
     dmLogInfo("leaderboardId : %s\n", leaderboardId);
     dmLogInfo("score : %g\n", score);
-    
+
     registerCallback(L, n, g_cbkInfo->m_Cbk);
     reportScore(leaderboardId, score, _error, g_cbkInfo);
     return 0;
@@ -82,10 +90,10 @@ static int showLeaderboards(lua_State* L)
 {
     DM_LUA_STACK_CHECK(L, 0);
     int n = lua_gettop(L);
-    
+
     const char *leaderboardId = 0;
     int timeScope = LEADERBOARD_TIME_SCOPE_ALLTIME;
-    
+
     if(n == 0) {
     	showLeaderboards(timeScope);
     }else if(lua_isnumber(L, 1)) {
@@ -117,11 +125,11 @@ static int showAchievements(lua_State* L)
 static int submitAchievement(lua_State* L)
 {
     DM_LUA_STACK_CHECK(L, 0);
-    
+
     const char *identifier = 0;
     double percentComplete = 0.0;
     int n = lua_gettop(L);
-    
+
     if(n > 2) {
     	identifier = lua_tostring(L, 1);
     	percentComplete = lua_tonumber(L, 2);
@@ -129,7 +137,7 @@ static int submitAchievement(lua_State* L)
     	identifier = toTableString(L, 1, "identifier");
     	percentComplete = checkTableNumber(L, 1, "percentComplete", 0.0);
     }
-    
+
     registerCallback(L, n, g_cbkInfo->m_Cbk);
     submitAchievement(identifier, percentComplete, _error, g_cbkInfo);
     return 0;
@@ -163,16 +171,47 @@ static int resetAchievements(lua_State* L)
     resetAchievements(_error, g_cbkInfo);
     return 0;
 }
+/** Save Game
+*/
+static int saveGame(lua_State* L)
+{
+  DM_LUA_STACK_CHECK(L, 0);
+  const char *str = 0;
+  const char *name = 0;
+
+  int n = lua_gettop(L);
+
+  if(n > 2) {
+    str = lua_tostring(L, 1);
+    name = lua_tostring(L, 2);
+  } else {
+    str = toTableString(L, 1, "save");
+    name = toTableString(L, 1, "name");
+  }
+
+  dmLogInfo("save string : %s\n", str);
+  dmLogInfo("name : %s\n", name);
+
+  registerCallback(L, n, g_cbkInfo->m_Cbk);
+  saveGameString(str, name, _error, g_cbkInfo);
+
+  dmLogInfo("saveGame called.\n");
+  //dmLogInfo("testBool: %s\n", testBool());
+
+  return 0;
+}
 
 static const luaL_reg Module_methods[] =
 {
     {"login", login},
+    {"isAvailable",isAvailable},
     {"reportScore", reportScore},
     {"showLeaderboards", showLeaderboards},
     {"showAchievements", showAchievements},
     {"submitAchievement", submitAchievement},
     {"loadAchievements", loadAchievements},
     {"resetAchievements", resetAchievements},
+    {"saveGame", saveGame},
     {0, 0}
 };
 
@@ -180,18 +219,18 @@ static void LuaInit(lua_State* L)
 {
     int top = lua_gettop(L);
     luaL_register(L, MODULE_NAME, Module_methods);
-    
+
 #define SETCONSTANT(name) \
 lua_pushnumber(L, (lua_Number) name); \
 lua_setfield(L, -2, #name);\
 
     SETCONSTANT(LEADERBOARD_PLAYER_SCOPE_GLOBAL)
     SETCONSTANT(LEADERBOARD_PLAYER_SCOPE_FRIENDS_ONLY)
-    
+
     SETCONSTANT(LEADERBOARD_TIME_SCOPE_TODAY)
     SETCONSTANT(LEADERBOARD_TIME_SCOPE_WEEK)
     SETCONSTANT(LEADERBOARD_TIME_SCOPE_ALLTIME)
-    
+
     SETCONSTANT(GK_ERROR_UNKOWN)
     SETCONSTANT(GK_ERROR_CACELLED)
     SETCONSTANT(GK_ERROR_COMMUNICATIONS_FAILURE)
@@ -221,9 +260,9 @@ lua_setfield(L, -2, #name);\
     SETCONSTANT(GK_ERROR_UBIQUITY_CONTAINER_UNAVAILABLE)
     SETCONSTANT(GK_ERROR_MATCH_NOT_CONNECTED)
     SETCONSTANT(GK_ERROR_GAME_SESSION_REQUEST_INVALID)
-    
+
 #undef SETCONSTANT
-    
+
     lua_pop(L, 1);
     assert(top == lua_gettop(L));
 }
@@ -234,7 +273,7 @@ dmExtension::Result AppInitializeGameCenter(dmExtension::AppParams* params)
         dmLogError("Game Center already initialized.");
         return dmExtension::RESULT_OK;
     }
-    
+
     g_cbkInfo = new CallbackInfo();
     return dmExtension::RESULT_OK;
 }
@@ -251,10 +290,10 @@ dmExtension::Result AppFinalizeGameCenter(dmExtension::AppParams* params)
     if( !g_cbkInfo) {
         return dmExtension::RESULT_OK;
     }
-    
+
     g_cbkInfo->Delete();
     delete g_cbkInfo;
-    g_cbkInfo = 0;  
+    g_cbkInfo = 0;
     return dmExtension::RESULT_OK;
 }
 
