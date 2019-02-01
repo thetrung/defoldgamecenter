@@ -59,8 +59,8 @@ local function login_cb(self, data)
 		print("===>message :" .. data.error.message)	
 	else
 		if data.playerID then
-			print("Game center initialized with:", data.alias, data.playerID)
-            ...
+		print("Game center initialized with:", data.alias, data.playerID)
+        ...
 		end
 	end
 end
@@ -136,8 +136,8 @@ local function login_cb(self, data)
 		print("===>message :" .. data.error.message)
 	else
 		if data.playerID then
-			print("Game center initialized with:", data.alias, data.playerID)
-            ...
+		print("Game center initialized with:", data.alias, data.playerID)
+        ...
 		end
 	end
 end
