@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
+//
 #define EXTENSION_NAME GameCenter
 #define LIB_NAME "GameCenter"
 #define MODULE_NAME "gamecenter"
@@ -76,8 +76,8 @@ static int reportScore(lua_State* L)
     	score = checkTableNumber(L, 1, "score", 0);
     }
 
-    dmLogInfo("leaderboardId : %s\n", leaderboardId);
-    dmLogInfo("score : %g\n", score);
+    // dmLogInfo("leaderboardId : %s\n", leaderboardId);
+    // dmLogInfo("score : %g\n", score);
 
     registerCallback(L, n, g_cbkInfo->m_Cbk);
     reportScore(leaderboardId, score, _error, g_cbkInfo);
@@ -189,13 +189,13 @@ static int saveGame(lua_State* L)
     name = toTableString(L, 1, "name");
   }
 
-  dmLogInfo("save string : %s\n", str);
-  dmLogInfo("name : %s\n", name);
+  // dmLogInfo("save string : %s\n", str);
+  // dmLogInfo("name : %s\n", name);
 
   registerCallback(L, n, g_cbkInfo->m_Cbk);
   saveGameString(str, name, _error, g_cbkInfo);
 
-  dmLogInfo("saveGame called.\n");
+  // dmLogInfo("saveGame called.\n");
   //dmLogInfo("testBool: %s\n", testBool());
 
   return 0;

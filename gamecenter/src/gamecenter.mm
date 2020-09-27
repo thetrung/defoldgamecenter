@@ -77,7 +77,7 @@ NSString *const PresentAuthenticationViewController = @"present_authentication_v
 
 - (void)authenticateLocalPlayer:(CallbackFn) fn withCallbackInfo:(CallbackInfo*) cbk
 {
-    NSLog (@"Authenticating local user...");
+    // NSLog (@"Authenticating local user...");
     @try {
     GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
 
@@ -90,7 +90,7 @@ NSString *const PresentAuthenticationViewController = @"present_authentication_v
 #endif
 
             if(viewController != nil) {
-                NSLog (@"Game Center: User was not logged in. Show Login Screen.");
+                // NSLog (@"Game Center: User was not logged in. Show Login Screen.");
                 [self setAuthenticationViewController:viewController];
             } else if([GKLocalPlayer localPlayer].isAuthenticated) {
                 NSLog (@"Game Center: You are logged in to game center.");
@@ -100,8 +100,8 @@ NSString *const PresentAuthenticationViewController = @"present_authentication_v
                 cbk->m_alias=[alias UTF8String];
                 fn(cbk);
             } else if (error != nil) {
-                NSLog (@"Game Center: Error occurred authenticating-");
-				NSLog (@"  %@", [error localizedDescription]);
+    //             NSLog (@"Game Center: Error occurred authenticating-");
+				// NSLog (@"  %@", [error localizedDescription]);
                 cbk->m_Error = new GKError([error code], [[error localizedDescription] UTF8String]);
             } else {
             	cbk->m_Error = new GKError(GKErrorUnknown, "Unknown");
@@ -113,7 +113,7 @@ NSString *const PresentAuthenticationViewController = @"present_authentication_v
         NSLog(@"authenticateLocalPlayer Caught an exception");
     }
     @finally{
-        NSLog(@"authenticateLocalPlayer Cleaning up");
+        // NSLog(@"authenticateLocalPlayer Cleaning up");
     }
 }
 
@@ -130,7 +130,7 @@ NSString *const PresentAuthenticationViewController = @"present_authentication_v
         object:self];
     }
     @catch (NSException *exception){
-        NSLog(@"setAuthenticationViewController Caught an exception");
+        // NSLog(@"setAuthenticationViewController Caught an exception");
     }
 }
 
@@ -138,7 +138,7 @@ NSString *const PresentAuthenticationViewController = @"present_authentication_v
 - (bool) isGameCenterAvailable {
 
     bool status=false;
-    NSLog(@"is available?");
+    // NSLog(@"is available?");
     @try {
         // check for presence of GKLocalPlayer API
         //Class gcClass = NSClassFromString(@"GKLocalPlayer");
@@ -162,7 +162,7 @@ NSString *const PresentAuthenticationViewController = @"present_authentication_v
     @try {
 
         if (isGameCenterAvailable()==true) {
-             NSLog(@"login in GameCenter is available");
+             // NSLog(@"login in GameCenter is available");
             [[NSNotificationCenter defaultCenter]
              addObserver:self
              selector:@selector(showAuthenticationViewController)
@@ -171,7 +171,7 @@ NSString *const PresentAuthenticationViewController = @"present_authentication_v
 
             [self authenticateLocalPlayer:fn withCallbackInfo:cbk];
         } else {
-            NSLog(@"GameCenter is not available");
+            // NSLog(@"GameCenter is not available");
             cbk->m_Error = new GKError(GKErrorUnknown, "GameCenter is not available");
             fn(cbk);
         }
@@ -247,11 +247,11 @@ NSString *const PresentAuthenticationViewController = @"present_authentication_v
 
 //NSString *str = @"helowrld";
 // This converts the string to an NSData object
-  NSLog(@"GameCenter.saveGameString %@",str);
+  // NSLog(@"GameCenter.saveGameString %@",str);
   NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
   //GKSavedGame *savedGame=[[GKSavedGame alloc]]
   GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
-  NSLog(@"Player=%@ , data=%@, name=%@", localPlayer, data, name);
+  // NSLog(@"Player=%@ , data=%@, name=%@", localPlayer, data, name);
 
   [localPlayer saveGameData:data withName:name completionHandler:^(GKSavedGame *savedGame, NSError *error) {
     if (savedGame != nil) { NSLog(@"Player data saved to GameCenter"); }else{ NSLog(@"Player=%@ data NOT saved to GameCenter, error=%@", localPlayer, error.description);}
